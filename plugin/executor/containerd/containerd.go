@@ -70,7 +70,7 @@ func (e *Executor) Create(id string, spec specs.Spec, stdout, stderr io.WriteClo
 		RuntimeRoot: filepath.Join(e.rootDir, "runtime-root"),
 	}
 	ctx := context.Background()
-	err := e.client.Create(ctx, id, &spec, &opts)
+	err := e.client.Create(ctx, id, &spec, "", &opts)
 	if err != nil {
 		status, err2 := e.client.Status(ctx, id)
 		if err2 != nil {
@@ -82,7 +82,7 @@ func (e *Executor) Create(id string, spec specs.Spec, stdout, stderr io.WriteClo
 				if err2 := e.client.Delete(ctx, id); err2 != nil && !errdefs.IsNotFound(err2) {
 					logrus.WithError(err2).WithField("plugin", id).Error("Error cleaning up containerd container")
 				}
-				err = e.client.Create(ctx, id, &spec, &opts)
+				err = e.client.Create(ctx, id, &spec, "", &opts)
 			}
 		}
 

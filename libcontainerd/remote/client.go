@@ -124,13 +124,17 @@ func (c *client) Restore(ctx context.Context, id string, attachStdio libcontaine
 	}, nil
 }
 
-func (c *client) Create(ctx context.Context, id string, ociSpec *specs.Spec, runtimeOptions interface{}) error {
+func (c *client) Create(ctx context.Context, id string, ociSpec *specs.Spec, runtime string, runtimeOptions interface{}) error {
 	bdir := c.bundleDir(id)
 	c.logger.WithField("bundle", bdir).WithField("root", ociSpec.Root.Path).Debug("bundle dir created")
 
+	if runtime == "" {
+		runtime = runtimeName
+	}
+
 	_, err := c.client.NewContainer(ctx, id,
 		containerd.WithSpec(ociSpec),
-		containerd.WithRuntime(runtimeName, runtimeOptions),
+		containerd.WithRuntime(runtime, runtimeOptions),
 		WithBundle(bdir, ociSpec),
 	)
 	if err != nil {
